@@ -1,11 +1,8 @@
 package webServer
 
-import commands.CancelCourseTakingApplication
-import commands.CreateCourseTakingApplication
-import domain.Application
+import domain.CourseTakingApplication
 import domain.CourseTakingHub
 import domain.User
-import kotlinx.serialization.json.Json
 import org.http4k.core.*
 import org.http4k.core.body.form
 import org.http4k.routing.bind
@@ -21,42 +18,53 @@ class CourseTaking(val hub: CourseTakingHub): HttpHandler {
 
     val httpHandler = routes(
         "/ping" bind Method.GET to { Response(Status.OK) },
-        "/application/{user}" bind Method.GET to ::getApplicationList,
+        "/application/{user}" bind Method.GET to ::getApplications,
         "/application/{user}" bind Method.POST to ::applyCourseTaking,
-        "/application/{user}" bind Method.DELETE to ::cancelCourseTaking
+        "/application/{user}" bind Method.DELETE to ::cancelCourseTaking,
+        "/course" bind Method.GET to ::getCourses,
+        "/course/{courseId}" bind Method.GET to ::drawing,
+        "/course/{courseId}" bind Method.PATCH to ::updateCourseCapacity,
+        "/course/{courseId}" bind Method.POST to ::registerCourseMembers,
     )
 
+    private fun getCourses(request: Request): Response{
+        TODO("履修可能な科目を返す")
+    }
+
     //Request -> User -> Result -> Response
-    private fun getApplicationList(request: Request): Response {
-        return  request.extractUser()
-            ?.let { hub.getApplicationList(it) }
-            ?.let(::convertApplicationListToJson) //TODO("convert to Json")
-            ?.let(::toResponse)
-            ?: Response(Status.NOT_FOUND)
+    private fun getApplications(request: Request): Response {
+        TODO()
     }
 
     //Request -> User,Application -> Result -> Response
     private fun applyCourseTaking(request: Request): Response {
-        val user = request.extractUser()
-        return  request.extractApplication()
-            ?.let { CreateCourseTakingApplication(user, it) }
-            ?.let(hub::handle)//Result噛ませたい
-            ?.let { Response(Status.OK) }
-            ?: Response(Status.BAD_REQUEST)
+        TODO()
+
     }
 
     //Request -> User,Application -> Result -> Response
     private fun cancelCourseTaking(request: Request): Response {
-        val user = request.extractUser()
-        return  request.extractApplication()
-            ?.let { CancelCourseTakingApplication(user, it) }
-            ?.let(hub::handle)//Result噛ませたい
-            ?.let { Response(Status.OK) }
-            ?: Response(Status.BAD_REQUEST)
+        TODO()
+
     }
 
+    private fun drawing(request: Request): Response {
+        TODO()
+
+    }
+
+    private fun updateCourseCapacity(request: Request): Response {
+        TODO()
+    }
+
+    private fun registerCourseMembers(request: Request): Response {
+        TODO()
+    }
+
+
+
     data class JsonData(val raw:String)
-    fun convertApplicationListToJson(list: List<Application>): JsonData {
+    fun convertApplicationListToJson(list: List<CourseTakingApplication>): JsonData {
         /*TODO: serialize list*/
         return JsonData("nothing")
     }
@@ -66,11 +74,5 @@ class CourseTaking(val hub: CourseTakingHub): HttpHandler {
 
 
 
-    private fun Request.extractUser(): User = path("user").orEmpty().let(::User)
-    private fun Request.extractApplication(): Application? {
-        val id = form("applicationId") ?:return null
-        val course = form("course") ?: return null
-        return Application(id, course)
-    }
 }
 

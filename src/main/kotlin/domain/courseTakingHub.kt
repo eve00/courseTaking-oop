@@ -1,22 +1,20 @@
 package domain
 
-import commands.CourseTakingApplicationCommand
-import commands.CourseTakingApplicationCommandHandler
+interface CourseTakingHub{
 
-interface CourseTakingHub {
-    fun getApplicationList(user: User): List<Application>?
-    fun handle(command: CourseTakingApplicationCommand): CourseTakingApplicationCommand?
 }
 
+/*
+実装クラス
 class CourseTakingApplicationHub(
     val commandHandler: CourseTakingApplicationCommandHandler
 ):CourseTakingHub {
     override fun getApplicationList(user: User): List<Application>? {
-       return null
+        return null
     }
 
     override fun handle(command: CourseTakingApplicationCommand): CourseTakingApplicationCommand? {
         return null
 
     }
-}
+}*/
