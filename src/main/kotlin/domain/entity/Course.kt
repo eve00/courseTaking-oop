@@ -1,4 +1,6 @@
-package domain
+package domain.entity
+
+import domain.entity.common.Identifier
 
 typealias CourseId = Identifier<Course, String>
 class Course(
@@ -7,7 +9,7 @@ class Course(
     val capacity: Int
 
 ) {
-    fun getId():CourseId {return id}
+    fun getId(): CourseId {return id}
     fun getName():String {return name}
 
     fun getCapacity():Int{return capacity}
