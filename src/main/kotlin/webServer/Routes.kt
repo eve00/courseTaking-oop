@@ -1,62 +1,140 @@
 package webServer
 
-import commands.CancelCourseTakingApplication
-import commands.CreateCourseTakingApplication
-import domain.Application
-import domain.CourseTakingHub
-import domain.User
-import kotlinx.serialization.json.Json
+import domain.entity.CourseId
+import domain.entity.CourseTakingApplication
+import domain.entity.CourseTakingApplicationId
+import domain.entity.StudentId
+import domain.service.CourseTakingApplicationService
+import kotlinx.coroutines.*
 import org.http4k.core.*
-import org.http4k.core.body.form
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
+import java.util.*
+import org.http4k.core.ContentType.Companion.APPLICATION_JSON
+import org.http4k.core.Status.Companion.OK
 
 /*
 * TODO:
 * 抽選、先着管理、登録、科目取得
 * */
-class CourseTaking(val hub: CourseTakingHub): HttpHandler {
+class CourseTakingApplication(val courseTakingApplicationService: CourseTakingApplicationService) : HttpHandler {
     override fun invoke(request: Request): Response = httpHandler(request)
 
     val httpHandler = routes(
         "/ping" bind Method.GET to { Response(Status.OK) },
-        "/application/{user}" bind Method.GET to ::getApplicationList,
+        /*QUERY*/
+        "/course" bind Method.GET to ::getCourses,
+        "/application/{user}" bind Method.GET to ::getApplications,
+        /*courseTaking*/
         "/application/{user}" bind Method.POST to ::applyCourseTaking,
-        "/application/{user}" bind Method.DELETE to ::cancelCourseTaking
+        "/application/{user}" bind Method.DELETE to ::cancelCourseTaking,
+        /*courseRegistration*/
+        "/course/{courseId}" bind Method.GET to ::drawAndRegisterCourseMembers,
+        "/course/{courseId}" bind Method.PATCH to ::addCourseCapacity,
+        "/course/{courseId}" bind Method.POST to ::registerCourseMembers,
     )
 
+    private fun getCourses(request: Request): Response {
+        TODO("履修可能な科目を返す")
+        /*requestから学年,専攻,学期,曜日,時限を取得*/
+
+
+        /*responseを返す*/
+    }
+
     //Request -> User -> Result -> Response
-    private fun getApplicationList(request: Request): Response {
-        return  request.extractUser()
-            ?.let { hub.getApplicationList(it) }
-            ?.let(::convertApplicationListToJson) //TODO("convert to Json")
-            ?.let(::toResponse)
-            ?: Response(Status.NOT_FOUND)
+    private fun getApplications(request: Request): Response {
+        TODO()
+        /*requestからuserを取得*/
+
+
+        /*responseを返す*/
     }
 
     //Request -> User,Application -> Result -> Response
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun applyCourseTaking(request: Request): Response {
-        val user = request.extractUser()
-        return  request.extractApplication()
-            ?.let { CreateCourseTakingApplication(user, it) }
-            ?.let(hub::handle)//Result噛ませたい
-            ?.let { Response(Status.OK) }
-            ?: Response(Status.BAD_REQUEST)
+        val result = CoroutineScope(Dispatchers.IO).async {
+            runCatching {
+                /*requestからuser, applicationを取得*/
+                val studentId: StudentId = StudentId(request.path("studentId") ?: "")
+                val courseId: CourseId = CourseId(request.path("courseId") ?: "")
+
+                val courseTakingApplicationId = CourseTakingApplicationId(UUID.randomUUID().toString())
+                courseTakingApplicationService.applyCourseTaking(
+                    courseTakingApplicationId,
+                    studentId,
+                    courseId
+                )
+
+            }
+        }
+
+        /*responseを返す*/
+
+      return if(result.getCompleted().isSuccess){
+          JsonData("Successed").toOKResponse()
+      }else{
+          /*TODO: エラーハンドリング*/
+          return Response(Status.BAD_REQUEST)
+      }
+
     }
 
     //Request -> User,Application -> Result -> Response
     private fun cancelCourseTaking(request: Request): Response {
-        val user = request.extractUser()
-        return  request.extractApplication()
-            ?.let { CancelCourseTakingApplication(user, it) }
-            ?.let(hub::handle)//Result噛ませたい
-            ?.let { Response(Status.OK) }
-            ?: Response(Status.BAD_REQUEST)
+        TODO("requestからcourseI")
+        /*requestからapplicationIdを取得*/
+
+
+        /*responseを返す*/
+
     }
 
-    data class JsonData(val raw:String)
-    fun convertApplicationListToJson(list: List<Application>): JsonData {
+    private fun drawAndRegisterCourseMembers(request: Request): Response {
+        TODO(
+            "requestからcourseidを取得" +
+                    "courseIdからcourseTakingApplicationリストを取得" +
+                    "抽選する" +
+                    "結果を返す"
+        )
+        /*requestからcourseIdを取得*/
+
+        /*courseIdからcourseTakingApplicationリストを取得*/
+
+        /*抽選する*/
+
+        /*結果を返す*/
+
+    }
+
+    private fun addCourseCapacity(request: Request): Response {
+        TODO()
+        /*requestから追加するcapacityを取得*/
+
+        /**/
+
+        /*responseを返す*/
+    }
+
+    private fun registerCourseMembers(request: Request): Response {
+        TODO()
+        /*requestからcourseIdを取得*/
+
+        /*対応するcourseに対して登録する*/
+
+        /*responseを返す*/
+    }
+
+
+    data class JsonData(val raw: String) {
+        fun toOKResponse(): Response {
+            return Response(OK).body(raw).header("Content-Type", APPLICATION_JSON.toHeaderValue())
+        }
+    }
+
+    fun convertApplicationListToJson(list: List<CourseTakingApplication>): JsonData {
         /*TODO: serialize list*/
         return JsonData("nothing")
     }
@@ -65,12 +143,4 @@ class CourseTaking(val hub: CourseTakingHub): HttpHandler {
         Response(Status.OK).body(data.raw)
 
 
-
-    private fun Request.extractUser(): User = path("user").orEmpty().let(::User)
-    private fun Request.extractApplication(): Application? {
-        val id = form("applicationId") ?:return null
-        val course = form("course") ?: return null
-        return Application(id, course)
-    }
 }
-
