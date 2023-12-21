@@ -1,11 +1,11 @@
 package domain.service
 
-import domain.entity.CourseTakingApplication
+import domain.entity.*
 
 interface CourseRegistrationService {
 
 
-    fun drawing(courseTakingApplicationList: List<CourseTakingApplication>): List<CourseTakingApplication>
+    suspend fun drawingAndRegisterMembers(courseId: CourseId)
 
-    fun registerMembers(courseTakingApplicationList: List<CourseTakingApplication>)
+    suspend fun registerMembers(courseId:CourseId)
 }

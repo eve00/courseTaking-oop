@@ -5,7 +5,6 @@ import domain.entity.CourseId
 import domain.entity.CourseTakingApplicationId
 import domain.entity.CourseTakingApplicationList
 import domain.entity.StudentId
-import domain.service.CourseService
 import domain.service.CourseTakingApplicationService
 import domain.service.FirstServedManagementService
 
@@ -24,7 +23,7 @@ class CourseTakingApplicationServiceImpl(
         courseId: CourseId
     ) {
         val courseTakingApplicationList = getCourseTakingApplicationList(studentId)
-        courseTakingApplicationList.createCourseTakingApplication(courseTakingApplicationId, courseId)
+        courseTakingApplicationList.createCourseTakingApplication(courseTakingApplicationId,studentId, courseId)
         repository.save(courseTakingApplicationList)
     }
 
@@ -50,4 +49,5 @@ class CourseTakingApplicationServiceImpl(
     override suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
         return repository.findByStudentId(studentId)
     }
+
 }

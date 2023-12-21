@@ -6,20 +6,22 @@ import java.util.UUID
 typealias CourseTakingApplicationId = Identifier<CourseTakingApplication, String>
 
 class CourseTakingApplication(
-    id: CourseTakingApplicationId,
-    courseId: CourseId,
+    private val id: CourseTakingApplicationId,
+    private val studentId: StudentId,
+    private val courseId: CourseId,
     status: Status
 ) {
-    private val _id = id
-    private val _courseId = courseId
     private var _status = status
 
     fun getId(): CourseTakingApplicationId {
-        return _id
+        return id
     }
 
+    fun getStudentId(): StudentId {
+        return studentId
+    }
     fun getCourseId(): CourseId {
-        return _courseId
+        return courseId
     }
 
     fun getStatus(): Status {

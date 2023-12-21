@@ -2,6 +2,7 @@ package webServer
 
 import domain.entity.*
 import domain.entity.CourseTakingApplication
+import domain.service.CourseRegistrationService
 import domain.service.CourseService
 import domain.service.CourseTakingApplicationService
 import kotlinx.coroutines.*
@@ -20,6 +21,7 @@ import org.http4k.core.Status.Companion.OK
 * */
 class CourseTakingApplication(
     val courseTakingApplicationService: CourseTakingApplicationService,
+    val courseRegistrationService: CourseRegistrationService,
     val courseService: CourseService
 ) : HttpHandler {
     override fun invoke(request: Request): Response = httpHandler(request)
@@ -53,7 +55,6 @@ class CourseTakingApplication(
             /*TODO: エラーハンドリング*/
             return Response(Status.BAD_REQUEST)
         }
-
     }
 
     /*
@@ -148,30 +149,47 @@ class CourseTakingApplication(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun drawAndRegisterCourseMembers(request: Request): Response {
-        TODO(
-            "requestからcourseidを取得" +
-                    "courseIdからcourseTakingApplicationリストを取得" +
-                    "抽選する" +
-                    "結果を返す"
-        )
-        /*requestからcourseIdを取得*/
 
-        /*courseIdからcourseTakingApplicationリストを取得*/
+        val result = CoroutineScope(Dispatchers.IO).async {
+            runCatching {
+                /*requestからcourseIdを取得*/
+                val courseId: CourseId = CourseId(request.path("courseId") ?: "")
+                /*抽選する*/
+                courseRegistrationService.drawingAndRegisterMembers(courseId)
+            }
+        }
 
-        /*抽選する*/
 
         /*結果を返す*/
+        return if (result.getCompleted().isSuccess) {
+            JsonData("Successed").toOKResponse()
+        } else {
+            /*TODO: エラーハンドリング*/
+            return Response(Status.BAD_REQUEST)
+        }
 
     }
 
     private fun registerCourseMembers(request: Request): Response {
-        TODO()
-        /*requestからcourseIdを取得*/
+        val result = CoroutineScope(Dispatchers.IO).async {
+            runCatching {
+                /*requestからcourseIdを取得*/
+                val courseId: CourseId = CourseId(request.path("courseId") ?: "")
+                /*抽選する*/
+                courseRegistrationService.registerMembers(courseId)
+            }
+        }
 
-        /*対応するcourseに対して登録する*/
 
-        /*responseを返す*/
+        /*結果を返す*/
+        return if (result.getCompleted().isSuccess) {
+            JsonData("Successed").toOKResponse()
+        } else {
+            /*TODO: エラーハンドリング*/
+            return Response(Status.BAD_REQUEST)
+        }
     }
 
 
