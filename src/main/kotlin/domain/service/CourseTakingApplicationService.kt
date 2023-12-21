@@ -1,16 +1,11 @@
 package domain.service
 
-import domain.entity.CourseId
-import domain.entity.CourseTakingApplicationId
-import domain.entity.CourseTakingApplicationList
-import domain.entity.StudentId
+import domain.entity.*
 import org.http4k.core.Request
 interface CourseTakingApplicationService {
-    val firstServedState :Boolean
     suspend fun applyCourseTaking(courseTakingApplicationId: CourseTakingApplicationId, studentId:StudentId, courseId: CourseId)
-
     suspend fun cancelCourseTaking(studentId:StudentId,courseTakingApplicationId: CourseTakingApplicationId)
-
+    suspend fun applyCourseTakingBasedOnFirstserved(courseTakingApplicationId: CourseTakingApplicationId, studentId:StudentId, courseId: CourseId)
     suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList
 
     }

@@ -1,5 +1,6 @@
 package domain.entity
 
+import domain.entity.common.Faculty
 import domain.entity.common.Identifier
 
 typealias StudentId = Identifier<Student, String>
@@ -8,11 +9,23 @@ typealias StudentId = Identifier<Student, String>
 
 sealed class User()
 class Student(
-    val id: StudentId,
-    val name: String
+    private val id: StudentId,
+    private val name: String,
+    private val grade: Int,
+    private val faculty: Faculty,
 ): User() {
+
     fun getId(): StudentId {
         return id
     }
+    fun getGrade():Int{
+        return grade
+    }
+    fun getFaculty(): Faculty {
+        return faculty
+    }
 }
+
+
+
 class Teacher(): User()

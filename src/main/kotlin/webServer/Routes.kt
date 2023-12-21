@@ -1,9 +1,7 @@
 package webServer
 
-import domain.entity.CourseId
+import domain.entity.*
 import domain.entity.CourseTakingApplication
-import domain.entity.CourseTakingApplicationId
-import domain.entity.StudentId
 import domain.service.CourseService
 import domain.service.CourseTakingApplicationService
 import kotlinx.coroutines.*
@@ -13,6 +11,7 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import java.util.*
 import org.http4k.core.ContentType.Companion.APPLICATION_JSON
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.OK
 
 /*
@@ -29,13 +28,13 @@ class CourseTakingApplication(
         "/ping" bind Method.GET to { Response(Status.OK) },
         /*QUERY*/
         "/course" bind Method.GET to ::getCourses,
-        "/application/{user}" bind Method.GET to ::getApplications,
+        "/course" bind Method.GET to ::getCourses,
+        "/application" bind Method.GET to ::getApplications,
         /*courseTaking*/
-        "/application/{user}" bind Method.POST to ::applyCourseTaking,
-        "/application/{user}" bind Method.DELETE to ::cancelCourseTaking,
+        "/application" bind Method.POST to ::applyCourseTaking,
+        "/application" bind Method.DELETE to ::cancelCourseTaking,
         /*courseRegistration*/
         "/course/{courseId}" bind Method.GET to ::drawAndRegisterCourseMembers,
-        "/course/{courseId}" bind Method.PATCH to ::addCourseCapacity,
         "/course/{courseId}" bind Method.POST to ::registerCourseMembers,
     )
 
@@ -57,6 +56,9 @@ class CourseTakingApplication(
 
     }
 
+    /*
+* {studentId}
+* */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getApplications(request: Request): Response {
         /*requestからuserを取得*/
@@ -77,6 +79,9 @@ class CourseTakingApplication(
         }
     }
 
+    /*
+    * {studentId, courseId, applicationFormat}
+    * */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun applyCourseTaking(request: Request): Response {
         val result = CoroutineScope(Dispatchers.IO).async {
@@ -84,14 +89,22 @@ class CourseTakingApplication(
                 /*requestからuser, applicationを取得*/
                 val studentId: StudentId = StudentId(request.path("studentId") ?: "")
                 val courseId: CourseId = CourseId(request.path("courseId") ?: "")
+                val applicationFormat: String = request.path("applicationFormat") ?: ""
 
                 val courseTakingApplicationId = CourseTakingApplicationId(UUID.randomUUID().toString())
-                courseTakingApplicationService.applyCourseTaking(
-                    courseTakingApplicationId,
-                    studentId,
-                    courseId
-                )
+                when (applicationFormat) {
+                    "advanced" -> courseTakingApplicationService.applyCourseTaking(
+                        courseTakingApplicationId,
+                        studentId,
+                        courseId
+                    )
 
+                    "first-served" -> courseTakingApplicationService.applyCourseTakingBasedOnFirstserved(
+                        courseTakingApplicationId,
+                        studentId,
+                        courseId
+                    )
+                }
             }
         }
 
@@ -106,17 +119,27 @@ class CourseTakingApplication(
 
     }
 
-    //Request -> User,Application -> Result -> Response
+    /*
+    * {studentId, courseTakingApplicationId}
+    * */
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun cancelCourseTaking(request: Request): Response {
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
+                /*requestからuser, applicationを取得*/
+                val studentId: StudentId = StudentId(request.path("studentId") ?: "")
+                val courseTakingApplicationId: CourseTakingApplicationId =
+                    CourseTakingApplicationId(request.path("courseTakingApplicationId") ?: "")
 
+                courseTakingApplicationService.cancelCourseTaking(
+                    studentId,
+                    courseTakingApplicationId,
+                )
             }
-
-        }        /*requestからapplicationIdを取得*/
-
+        }
 
         /*responseを返す*/
+
         return if (result.getCompleted().isSuccess) {
             JsonData("Successed").toOKResponse()
         } else {
@@ -140,15 +163,6 @@ class CourseTakingApplication(
 
         /*結果を返す*/
 
-    }
-
-    private fun addCourseCapacity(request: Request): Response {
-        TODO()
-        /*requestから追加するcapacityを取得*/
-
-        /**/
-
-        /*responseを返す*/
     }
 
     private fun registerCourseMembers(request: Request): Response {
