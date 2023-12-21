@@ -3,18 +3,38 @@ package domain.entity
 import domain.entity.common.Identifier
 
 typealias CourseId = Identifier<Course, String>
+
+
 class Course(
     val id: CourseId,
     val name: String,
-    val capacity: Int
-
+    val term: String,
+    val dowAndPeriod: DowAndPeriod,
+    val max: Int,
 ) {
-    fun getId(): CourseId {return id}
-    fun getName():String {return name}
+    private var _max = max
+    fun getId(): CourseId {
+        return id
+    }
 
-    fun getCapacity():Int{return capacity}
+    fun getName(): String {
+        return name
+    }
 
-    fun updateCapacity():Nothing = TODO("Async")
+    fun getTerm(): String {
+        return term
+    }
 
-    suspend fun getDetail(): Nothing = TODO("Async")
+    fun getDowAndPeriod(): DowAndPeriod {
+        return dowAndPeriod
+    }
+
+    fun getMax(): Int {
+        return _max
+    }
 }
+
+data class DowAndPeriod(
+    val dow: String,
+    val period: String
+)

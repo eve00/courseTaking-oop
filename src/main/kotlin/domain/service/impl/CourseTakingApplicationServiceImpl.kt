@@ -1,20 +1,21 @@
 package domain.service.impl
 
 import data.repository.CourseTakingApplicationListsRepository
-import domain.entity.*
+import domain.entity.CourseId
+import domain.entity.CourseTakingApplicationId
+import domain.entity.CourseTakingApplicationList
+import domain.entity.StudentId
 import domain.service.CourseTakingApplicationService
-import org.http4k.core.Request
+import domain.service.FirstServedManagementService
 
 /*
 * 履修の申請に関する機能を提供するクラス
 *
 * */
 class CourseTakingApplicationServiceImpl(
-    val repository: CourseTakingApplicationListsRepository
+    val repository: CourseTakingApplicationListsRepository,
+    val firstServedManagementService: FirstServedManagementService
 ) : CourseTakingApplicationService {
-
-    override val firstServedState: Boolean
-        get() = TODO("Not yet implemented")
 
     override suspend fun applyCourseTaking(
         courseTakingApplicationId: CourseTakingApplicationId,
@@ -22,7 +23,7 @@ class CourseTakingApplicationServiceImpl(
         courseId: CourseId
     ) {
         val courseTakingApplicationList = getCourseTakingApplicationList(studentId)
-        courseTakingApplicationList.createCourseTakingApplication(courseTakingApplicationId, courseId)
+        courseTakingApplicationList.createCourseTakingApplication(courseTakingApplicationId,studentId, courseId)
         repository.save(courseTakingApplicationList)
     }
 
@@ -35,7 +36,18 @@ class CourseTakingApplicationServiceImpl(
         repository.save(courseTakingApplicationList)
     }
 
-    private suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
+    override suspend fun applyCourseTakingBasedOnFirstserved(
+        courseTakingApplicationId: CourseTakingApplicationId,
+        studentId: StudentId,
+        courseId: CourseId
+    ) {
+        if (firstServedManagementService.checkCanTake(courseId)) {
+            applyCourseTaking(courseTakingApplicationId, studentId, courseId)
+        }
+    }
+
+    override suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
         return repository.findByStudentId(studentId)
     }
+
 }
