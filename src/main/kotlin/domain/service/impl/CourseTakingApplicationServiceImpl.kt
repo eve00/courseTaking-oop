@@ -35,7 +35,7 @@ class CourseTakingApplicationServiceImpl(
         repository.save(courseTakingApplicationList)
     }
 
-    private suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
+    override suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
         return repository.findByStudentId(studentId)
     }
 }

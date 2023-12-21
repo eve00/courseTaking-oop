@@ -4,6 +4,7 @@ import domain.entity.CourseId
 import domain.entity.CourseTakingApplication
 import domain.entity.CourseTakingApplicationId
 import domain.entity.StudentId
+import domain.service.CourseService
 import domain.service.CourseTakingApplicationService
 import kotlinx.coroutines.*
 import org.http4k.core.*
@@ -18,7 +19,10 @@ import org.http4k.core.Status.Companion.OK
 * TODO:
 * 抽選、先着管理、登録、科目取得
 * */
-class CourseTakingApplication(val courseTakingApplicationService: CourseTakingApplicationService) : HttpHandler {
+class CourseTakingApplication(
+    val courseTakingApplicationService: CourseTakingApplicationService,
+    val courseService: CourseService
+) : HttpHandler {
     override fun invoke(request: Request): Response = httpHandler(request)
 
     val httpHandler = routes(
@@ -35,24 +39,44 @@ class CourseTakingApplication(val courseTakingApplicationService: CourseTakingAp
         "/course/{courseId}" bind Method.POST to ::registerCourseMembers,
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getCourses(request: Request): Response {
-        TODO("履修可能な科目を返す")
-        /*requestから学年,専攻,学期,曜日,時限を取得*/
-
+        val result = CoroutineScope(Dispatchers.IO).async {
+            runCatching {
+                courseService.getCourses()
+            }
+        }
 
         /*responseを返す*/
+        return if (result.getCompleted().isSuccess) {
+            JsonData("Success").toOKResponse()
+        } else {
+            /*TODO: エラーハンドリング*/
+            return Response(Status.BAD_REQUEST)
+        }
+
     }
 
-    //Request -> User -> Result -> Response
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getApplications(request: Request): Response {
-        TODO()
         /*requestからuserを取得*/
+        val result = CoroutineScope(Dispatchers.IO).async {
+            runCatching {
+                val studentId: StudentId = StudentId(request.path("studentId") ?: "")
 
+                courseTakingApplicationService.getCourseTakingApplicationList(studentId)
+            }
+        }
 
         /*responseを返す*/
+        return if (result.getCompleted().isSuccess) {
+            JsonData("Successed").toOKResponse()
+        } else {
+            /*TODO: エラーハンドリング*/
+            return Response(Status.BAD_REQUEST)
+        }
     }
 
-    //Request -> User,Application -> Result -> Response
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun applyCourseTaking(request: Request): Response {
         val result = CoroutineScope(Dispatchers.IO).async {
@@ -73,23 +97,32 @@ class CourseTakingApplication(val courseTakingApplicationService: CourseTakingAp
 
         /*responseを返す*/
 
-      return if(result.getCompleted().isSuccess){
-          JsonData("Successed").toOKResponse()
-      }else{
-          /*TODO: エラーハンドリング*/
-          return Response(Status.BAD_REQUEST)
-      }
+        return if (result.getCompleted().isSuccess) {
+            JsonData("Successed").toOKResponse()
+        } else {
+            /*TODO: エラーハンドリング*/
+            return Response(Status.BAD_REQUEST)
+        }
 
     }
 
     //Request -> User,Application -> Result -> Response
     private fun cancelCourseTaking(request: Request): Response {
-        TODO("requestからcourseI")
-        /*requestからapplicationIdを取得*/
+        val result = CoroutineScope(Dispatchers.IO).async {
+            runCatching {
+
+            }
+
+        }        /*requestからapplicationIdを取得*/
 
 
         /*responseを返す*/
-
+        return if (result.getCompleted().isSuccess) {
+            JsonData("Successed").toOKResponse()
+        } else {
+            /*TODO: エラーハンドリング*/
+            return Response(Status.BAD_REQUEST)
+        }
     }
 
     private fun drawAndRegisterCourseMembers(request: Request): Response {
