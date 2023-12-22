@@ -1,10 +1,7 @@
 package domain.service.impl
 
-import data.repository.CourseTakingApplicationListsRepository
-import domain.entity.CourseId
-import domain.entity.CourseTakingApplicationId
-import domain.entity.CourseTakingApplicationList
-import domain.entity.StudentId
+import data.repository.CourseTakingApplicationsRepository
+import domain.entity.*
 import domain.service.CourseTakingApplicationService
 import domain.service.FirstServedManagementService
 
@@ -13,7 +10,7 @@ import domain.service.FirstServedManagementService
 *
 * */
 class CourseTakingApplicationServiceImpl(
-    val repository: CourseTakingApplicationListsRepository,
+    val repository: CourseTakingApplicationsRepository,
     val firstServedManagementService: FirstServedManagementService
 ) : CourseTakingApplicationService {
 
@@ -22,18 +19,16 @@ class CourseTakingApplicationServiceImpl(
         studentId: StudentId,
         courseId: CourseId
     ) {
-        val courseTakingApplicationList = getCourseTakingApplicationList(studentId)
-        courseTakingApplicationList.createCourseTakingApplication(courseTakingApplicationId,studentId, courseId)
-        repository.save(courseTakingApplicationList)
+        val newCourseTakingApplication =
+            CourseTakingApplication(courseTakingApplicationId, studentId, courseId, State.UNCONFIRMED)
+        repository.save(newCourseTakingApplication)
     }
 
     override suspend fun cancelCourseTaking(
-        studentId: StudentId,
         courseTakingApplicationId: CourseTakingApplicationId
     ) {
-        val courseTakingApplicationList = getCourseTakingApplicationList(studentId)
-        courseTakingApplicationList.deleteCourseTakingApplication(courseTakingApplicationId)
-        repository.save(courseTakingApplicationList)
+        val canceledCourseTakingApplication = repository.findByCourseTakingApplicationId(courseTakingApplicationId)
+        repository.delete(canceledCourseTakingApplication)
     }
 
     override suspend fun applyCourseTakingBasedOnFirstserved(
@@ -41,12 +36,11 @@ class CourseTakingApplicationServiceImpl(
         studentId: StudentId,
         courseId: CourseId
     ) {
-        if (firstServedManagementService.checkCanTake(courseId)) {
+        if (firstServedManagementService.checkCanTake(courseId))
             applyCourseTaking(courseTakingApplicationId, studentId, courseId)
-        }
     }
 
-    override suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
+    override suspend fun getCourseTakingApplications(studentId: StudentId): List<CourseTakingApplication> {
         return repository.findByStudentId(studentId)
     }
 

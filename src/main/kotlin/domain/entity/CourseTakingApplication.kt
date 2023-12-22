@@ -1,7 +1,6 @@
 package domain.entity
 
 import domain.entity.common.Identifier
-import java.util.UUID
 
 typealias CourseTakingApplicationId = Identifier<CourseTakingApplication, String>
 
@@ -9,9 +8,9 @@ class CourseTakingApplication(
     private val id: CourseTakingApplicationId,
     private val studentId: StudentId,
     private val courseId: CourseId,
-    status: Status
+    private val state: State
 ) {
-    private var _status = status
+    private var _state = state
 
     fun getId(): CourseTakingApplicationId {
         return id
@@ -20,27 +19,31 @@ class CourseTakingApplication(
     fun getStudentId(): StudentId {
         return studentId
     }
+
     fun getCourseId(): CourseId {
         return courseId
     }
 
-    fun getStatus(): Status {
-        return _status
+    fun getState(): State {
+        return _state
     }
 
-    /*登録される*/
-    fun confirm(){
-        _status = Status.UNCONFIRMED
+    /*抽選で当選する*/
+
+    fun confirm() {
+        if (_state == State.UNCONFIRMED)
+            _state = State.CONFIRMED
     }
 
     /*抽選で落選する*/
-    fun invalidate(){
-        _status = Status.INVALIDATED
+    fun invalidate() {
+        if (_state == State.UNCONFIRMED)
+            _state = State.INVALIDATED
     }
 
 
 }
 
-enum class Status {
-    UNCONFIRMED, CONFIRMED, INVALIDATED
+enum class State {
+    CREATED, UNCONFIRMED, CONFIRMED, INVALIDATED
 }

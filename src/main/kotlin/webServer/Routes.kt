@@ -19,10 +19,10 @@ import org.http4k.core.Status.Companion.OK
 * TODO:
 * 抽選、先着管理、登録、科目取得
 * */
-class CourseTakingApplication(
-    val courseTakingApplicationService: CourseTakingApplicationService,
-    val courseRegistrationService: CourseRegistrationService,
-    val courseService: CourseService
+class CourseTaking(
+    private val courseTakingApplicationService: CourseTakingApplicationService,
+    private val courseRegistrationService: CourseRegistrationService,
+    private val courseService: CourseService
 ) : HttpHandler {
     override fun invoke(request: Request): Response = httpHandler(request)
 
@@ -53,7 +53,7 @@ class CourseTakingApplication(
             JsonData("Success").toOKResponse()
         } else {
             /*TODO: エラーハンドリング*/
-            return Response(Status.BAD_REQUEST)
+            Response(Status.BAD_REQUEST)
         }
     }
 
@@ -67,16 +67,16 @@ class CourseTakingApplication(
             runCatching {
                 val studentId: StudentId = StudentId(request.path("studentId") ?: "")
 
-                courseTakingApplicationService.getCourseTakingApplicationList(studentId)
+                courseTakingApplicationService.getCourseTakingApplications(studentId)
             }
         }
 
         /*responseを返す*/
         return if (result.getCompleted().isSuccess) {
-            JsonData("Successed").toOKResponse()
+            Response(OK)
         } else {
             /*TODO: エラーハンドリング*/
-            return Response(Status.BAD_REQUEST)
+            Response(Status.BAD_REQUEST)
         }
     }
 
@@ -112,10 +112,10 @@ class CourseTakingApplication(
         /*responseを返す*/
 
         return if (result.getCompleted().isSuccess) {
-            JsonData("Successed").toOKResponse()
+            Response(OK)
         } else {
             /*TODO: エラーハンドリング*/
-            return Response(Status.BAD_REQUEST)
+            Response(Status.BAD_REQUEST)
         }
 
     }
@@ -133,7 +133,6 @@ class CourseTakingApplication(
                     CourseTakingApplicationId(request.path("courseTakingApplicationId") ?: "")
 
                 courseTakingApplicationService.cancelCourseTaking(
-                    studentId,
                     courseTakingApplicationId,
                 )
             }
@@ -142,10 +141,10 @@ class CourseTakingApplication(
         /*responseを返す*/
 
         return if (result.getCompleted().isSuccess) {
-            JsonData("Successed").toOKResponse()
+            Response(OK)
         } else {
             /*TODO: エラーハンドリング*/
-            return Response(Status.BAD_REQUEST)
+            Response(Status.BAD_REQUEST)
         }
     }
 
@@ -164,10 +163,10 @@ class CourseTakingApplication(
 
         /*結果を返す*/
         return if (result.getCompleted().isSuccess) {
-            JsonData("Successed").toOKResponse()
+            Response(OK)
         } else {
             /*TODO: エラーハンドリング*/
-            return Response(Status.BAD_REQUEST)
+            Response(Status.BAD_REQUEST)
         }
 
     }
@@ -185,10 +184,10 @@ class CourseTakingApplication(
 
         /*結果を返す*/
         return if (result.getCompleted().isSuccess) {
-            JsonData("Successed").toOKResponse()
+            Response(OK)
         } else {
             /*TODO: エラーハンドリング*/
-            return Response(Status.BAD_REQUEST)
+            Response(Status.BAD_REQUEST)
         }
     }
 
