@@ -11,7 +11,6 @@ import domain.service.FirstServedManagementService
 * */
 class CourseTakingApplicationServiceImpl(
     val repository: CourseTakingApplicationsRepository,
-    val firstServedManagementService: FirstServedManagementService
 ) : CourseTakingApplicationService {
 
     override suspend fun applyCourseTaking(
@@ -29,15 +28,6 @@ class CourseTakingApplicationServiceImpl(
     ) {
         val canceledCourseTakingApplication = repository.findByCourseTakingApplicationId(courseTakingApplicationId)
         repository.delete(canceledCourseTakingApplication)
-    }
-
-    override suspend fun applyCourseTakingBasedOnFirstserved(
-        courseTakingApplicationId: CourseTakingApplicationId,
-        studentId: StudentId,
-        courseId: CourseId
-    ) {
-        if (firstServedManagementService.checkCanTake(courseId))
-            applyCourseTaking(courseTakingApplicationId, studentId, courseId)
     }
 
     override suspend fun getCourseTakingApplications(studentId: StudentId): List<CourseTakingApplication> {

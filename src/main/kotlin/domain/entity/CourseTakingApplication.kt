@@ -45,5 +45,5 @@ class CourseTakingApplication(
 }
 
 enum class State {
-    CREATED, UNCONFIRMED, CONFIRMED, INVALIDATED
+    UNCONFIRMED, CONFIRMED, INVALIDATED
 }

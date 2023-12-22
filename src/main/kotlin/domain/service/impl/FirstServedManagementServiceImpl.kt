@@ -10,10 +10,6 @@ class FirstServedManagementServiceImpl(
     val repository: CourseTakingApplicationsRepository,
     val coursesRepository: CoursesRepository
 ) : FirstServedManagementService {
-    override suspend fun checkCanTake(courseId: CourseId): Boolean {
-        return repository.findByCourseId(courseId).size < coursesRepository.findById(courseId).getMax()
-    }
-
     override suspend fun getCoursesCanTake(): List<Course> {
         return coursesRepository.findAll()
             .filter { course ->
