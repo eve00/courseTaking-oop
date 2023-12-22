@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.0"
 
-    id("io.gitlab.arturbosch.detekt") version("1.23.3")
+    id("io.gitlab.arturbosch.detekt") version("1.23.4")
     id("org.jlleitschuh.gradle.ktlint") version ("11.6.1")
 
     application

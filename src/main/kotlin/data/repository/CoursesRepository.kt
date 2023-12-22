@@ -10,7 +10,7 @@ interface CoursesRepository {
     suspend fun findByFaculty(faculty: Faculty): List<Course>
 }
 
-class CoursesRepositoryImpl() : CoursesRepository {
+class CoursesRepositoryImpl : CoursesRepository {
     override suspend fun findAll(): List<Course> {
         TODO("Not yet implemented")
     }

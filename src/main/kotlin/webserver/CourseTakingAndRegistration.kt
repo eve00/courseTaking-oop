@@ -1,4 +1,4 @@
-package webServer
+package webserver
 
 import data.repository.CoursesRepository
 import domain.entity.CourseId
@@ -21,10 +21,6 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import java.util.*
 
-/*
-* TODO:
-* 抽選、先着管理、登録、科目取得
-* */
 class CourseTakingAndRegistration(
     private val courseTakingApplicationService: CourseTakingApplicationService,
     private val firstServedManagementServiceImpl: FirstServedManagementServiceImpl,
@@ -56,7 +52,7 @@ class CourseTakingAndRegistration(
 
         /*responseを返す*/
         return if (result.getCompleted().isSuccess) {
-            Response(OK)
+            Response(OK).body("$request.uri")
         } else {
             Response(Status.BAD_REQUEST)
         }
@@ -71,7 +67,7 @@ class CourseTakingAndRegistration(
 
         /*responseを返す*/
         return if (result.getCompleted().isSuccess) {
-            Response(OK)
+            Response(OK).body("$request.uri")
         } else {
             Response(Status.BAD_REQUEST)
         }

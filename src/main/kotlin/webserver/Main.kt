@@ -1,4 +1,4 @@
-package webServer
+package webserver
 
 import data.repository.CourseMembersRepositoryImpl
 import data.repository.CourseTakingApplicationsRepositoryImpl
@@ -10,6 +10,7 @@ import domain.service.impl.FirstServedManagementServiceImpl
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 
+const val PORT = 8080
 fun main(args: Array<String>) {
     CourseTakingAndRegistration(
         CourseTakingApplicationServiceImpl(
@@ -26,7 +27,7 @@ fun main(args: Array<String>) {
             StudentsRepositoryImpl()
         ),
         CoursesRepositoryImpl()
-    ).asServer(Jetty(8080)).start()
+    ).asServer(Jetty(PORT)).start()
 
     println("Server started at http://localhost:8080")
 }
