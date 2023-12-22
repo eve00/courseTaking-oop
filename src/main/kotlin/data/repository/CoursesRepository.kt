@@ -8,5 +8,4 @@ interface CoursesRepository {
     suspend fun findAll() : List<Course>
     suspend fun findById(courseId: CourseId) : Course
     suspend fun findByFaculty(faculty: Faculty) : List<Course>
-    suspend fun save(course:Course)
 }

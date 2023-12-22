@@ -22,7 +22,6 @@ dependencies {
 
 
     testImplementation ("org.http4k:http4k-client-jetty:4.48.0.0")
-    testImplementation( "org.jsoup:jsoup:1.12.1")
 }
 
 tasks.test {

@@ -7,13 +7,12 @@ typealias StudentId = Identifier<Student, String>
 
 
 
-sealed class User()
-class Student(
+data class Student(
     private val id: StudentId,
     private val name: String,
     private val grade: Int,
     private val faculty: Faculty,
-): User() {
+) {
 
     fun getId(): StudentId {
         return id
@@ -25,7 +24,3 @@ class Student(
         return faculty
     }
 }
-
-
-
-class Teacher(): User()
