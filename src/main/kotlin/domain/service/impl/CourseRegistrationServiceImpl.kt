@@ -31,7 +31,7 @@ class CourseRegistrationServiceImpl(
             it.invalidate()
         }
 
-        drawedCourseTakingApplications.forEach {  courseTakingApplicationsRepository.save(it) }
+        drawedCourseTakingApplications.forEach { courseTakingApplicationsRepository.save(it) }
         invalidatedCourseTakingApplications.forEach { courseTakingApplicationsRepository.save(it) }
 
         /*登録*/

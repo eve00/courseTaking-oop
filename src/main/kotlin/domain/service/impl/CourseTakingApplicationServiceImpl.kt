@@ -1,16 +1,19 @@
 package domain.service.impl
 
 import data.repository.CourseTakingApplicationsRepository
-import domain.entity.*
+import domain.entity.CourseId
+import domain.entity.CourseTakingApplication
+import domain.entity.CourseTakingApplicationId
+import domain.entity.State
+import domain.entity.StudentId
 import domain.service.CourseTakingApplicationService
-import domain.service.FirstServedManagementService
 
 /*
 * 履修の申請に関する機能を提供するクラス
 *
 * */
 class CourseTakingApplicationServiceImpl(
-    val repository: CourseTakingApplicationsRepository,
+    val repository: CourseTakingApplicationsRepository
 ) : CourseTakingApplicationService {
 
     override suspend fun applyCourseTaking(
@@ -33,5 +36,4 @@ class CourseTakingApplicationServiceImpl(
     override suspend fun getCourseTakingApplications(studentId: StudentId): List<CourseTakingApplication> {
         return repository.findByStudentId(studentId)
     }
-
 }

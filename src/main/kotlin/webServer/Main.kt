@@ -1,39 +1,32 @@
 package webServer
 
-import data.repository.*
+import data.repository.CourseMembersRepositoryImpl
+import data.repository.CourseTakingApplicationsRepositoryImpl
+import data.repository.CoursesRepositoryImpl
+import data.repository.StudentsRepositoryImpl
 import domain.service.impl.CourseRegistrationServiceImpl
 import domain.service.impl.CourseTakingApplicationServiceImpl
 import domain.service.impl.FirstServedManagementServiceImpl
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 
-
 fun main(args: Array<String>) {
     CourseTakingAndRegistration(
         CourseTakingApplicationServiceImpl(
-            CourseTakingApplicationsRepositoryImpl(),
+            CourseTakingApplicationsRepositoryImpl()
         ),
         FirstServedManagementServiceImpl(
             CourseTakingApplicationsRepositoryImpl(),
-            CoursesRepositoryImpl(),
+            CoursesRepositoryImpl()
         ),
         CourseRegistrationServiceImpl(
             CourseTakingApplicationsRepositoryImpl(),
             CourseMembersRepositoryImpl(),
             CoursesRepositoryImpl(),
-            StudentsRepositoryImpl(),
+            StudentsRepositoryImpl()
         ),
-        CoursesRepositoryImpl(),
+        CoursesRepositoryImpl()
     ).asServer(Jetty(8080)).start()
 
     println("Server started at http://localhost:8080")
-
 }
-
-
-
-
-
-
-
-

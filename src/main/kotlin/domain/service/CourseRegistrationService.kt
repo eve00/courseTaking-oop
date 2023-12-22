@@ -1,6 +1,6 @@
 package domain.service
 
-import domain.entity.*
+import domain.entity.CourseId
 
 interface CourseRegistrationService {
     suspend fun drawingAndRegisterMembers(courseId: CourseId)

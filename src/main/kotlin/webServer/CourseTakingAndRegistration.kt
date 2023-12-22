@@ -1,18 +1,25 @@
 package webServer
 
 import data.repository.CoursesRepository
-import domain.entity.*
+import domain.entity.CourseId
+import domain.entity.CourseTakingApplicationId
+import domain.entity.StudentId
 import domain.service.CourseRegistrationService
 import domain.service.CourseTakingApplicationService
 import domain.service.impl.FirstServedManagementServiceImpl
-import kotlinx.coroutines.*
-import org.http4k.core.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
+import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import java.util.*
-import org.http4k.core.Status
-import org.http4k.core.Status.Companion.OK
 
 /*
 * TODO:
@@ -37,9 +44,8 @@ class CourseTakingAndRegistration(
         "/application/cancelApplication" bind Method.DELETE to ::cancelCourseTaking,
         /*抽選・登録*/
         "/course/{courseId}/drawAndRegisterMembers" bind Method.POST to ::drawAndRegisterCourseMembers,
-        "/course/{courseId}/registerMembers" bind Method.POST to ::registerCourseMembers,
+        "/course/{courseId}/registerMembers" bind Method.POST to ::registerCourseMembers
     )
-
 
     private fun getCourses(request: Request): Response {
         val result = CoroutineScope(Dispatchers.IO).async {
@@ -131,7 +137,7 @@ class CourseTakingAndRegistration(
 
                 /*申請のキャンセル*/
                 courseTakingApplicationService.cancelCourseTaking(
-                    courseTakingApplicationId,
+                    courseTakingApplicationId
                 )
             }
         }
@@ -160,7 +166,6 @@ class CourseTakingAndRegistration(
         } else {
             Response(Status.BAD_REQUEST)
         }
-
     }
 
     private fun registerCourseMembers(request: Request): Response {
@@ -172,7 +177,6 @@ class CourseTakingAndRegistration(
                 courseRegistrationService.registerMembers(courseId)
             }
         }
-
 
         /*結果を返す*/
         return if (result.getCompleted().isSuccess) {

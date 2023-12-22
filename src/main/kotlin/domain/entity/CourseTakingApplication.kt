@@ -31,17 +31,17 @@ class CourseTakingApplication(
     /*抽選で当選する*/
 
     fun confirm() {
-        if (_state == State.UNCONFIRMED)
+        if (_state == State.UNCONFIRMED) {
             _state = State.CONFIRMED
+        }
     }
 
     /*抽選で落選する*/
     fun invalidate() {
-        if (_state == State.UNCONFIRMED)
+        if (_state == State.UNCONFIRMED) {
             _state = State.INVALIDATED
+        }
     }
-
-
 }
 
 enum class State {

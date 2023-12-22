@@ -8,7 +8,7 @@ interface StudentsRepository {
     suspend fun findById(studentId: StudentId): Student
 }
 
-class StudentsRepositoryImpl:StudentsRepository {
+class StudentsRepositoryImpl : StudentsRepository {
     override suspend fun findAll(): List<Student> {
         TODO("Not yet implemented")
     }
@@ -16,5 +16,4 @@ class StudentsRepositoryImpl:StudentsRepository {
     override suspend fun findById(studentId: StudentId): Student {
         TODO("Not yet implemented")
     }
-
 }

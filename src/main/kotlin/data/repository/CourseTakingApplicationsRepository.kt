@@ -1,6 +1,9 @@
 package data.repository
 
-import domain.entity.*
+import domain.entity.CourseId
+import domain.entity.CourseTakingApplication
+import domain.entity.CourseTakingApplicationId
+import domain.entity.StudentId
 
 interface CourseTakingApplicationsRepository {
 
@@ -9,10 +12,9 @@ interface CourseTakingApplicationsRepository {
     suspend fun findByCourseTakingApplicationId(courseTakingApplicationId: CourseTakingApplicationId): CourseTakingApplication
     suspend fun save(courseTakingApplication: CourseTakingApplication)
     suspend fun delete(courseTakingApplication: CourseTakingApplication)
-
 }
 
-class CourseTakingApplicationsRepositoryImpl(): CourseTakingApplicationsRepository {
+class CourseTakingApplicationsRepositoryImpl() : CourseTakingApplicationsRepository {
     override suspend fun findByStudentId(studentId: StudentId): List<CourseTakingApplication> {
         TODO("Not yet implemented")
     }
@@ -32,5 +34,4 @@ class CourseTakingApplicationsRepositoryImpl(): CourseTakingApplicationsReposito
     override suspend fun delete(courseTakingApplication: CourseTakingApplication) {
         TODO("Not yet implemented")
     }
-
 }

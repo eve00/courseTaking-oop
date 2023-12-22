@@ -4,13 +4,12 @@ import domain.entity.common.Identifier
 
 typealias CourseId = Identifier<Course, String>
 
-
 class Course(
     val id: CourseId,
     val name: String,
     val term: String,
     val dowAndPeriod: DowAndPeriod,
-    val max: Int,
+    val max: Int
 ) {
     private var _max = max
     fun getId(): CourseId {

@@ -1,6 +1,8 @@
 plugins {
     kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.8.20"
+
+    id("io.gitlab.arturbosch.detekt") version("1.23.3")
+    id("org.jlleitschuh.gradle.ktlint") version ("11.6.1")
 
     application
 }
@@ -15,13 +17,11 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
 
-    implementation ("org.http4k:http4k-core")
-    implementation( "org.http4k:http4k-server-jetty:4.48.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+    implementation("org.http4k:http4k-core")
+    implementation("org.http4k:http4k-server-jetty:4.48.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-
-    testImplementation ("org.http4k:http4k-client-jetty:4.48.0.0")
+    testImplementation("org.http4k:http4k-client-jetty:4.48.0.0")
 }
 
 tasks.test {
