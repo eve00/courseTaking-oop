@@ -7,8 +7,8 @@ import domain.entity.CourseId
 import domain.service.FirstServedManagementService
 
 class FirstServedManagementServiceImpl(
-    val repository: CourseTakingApplicationsRepository,
-    val coursesRepository: CoursesRepository
+    private val repository: CourseTakingApplicationsRepository,
+    private val coursesRepository: CoursesRepository
 ) : FirstServedManagementService {
     override suspend fun getCoursesCanTake(): List<Course> {
         return coursesRepository.findAll()

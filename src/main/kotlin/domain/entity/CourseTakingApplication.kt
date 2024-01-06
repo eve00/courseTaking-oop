@@ -7,10 +7,9 @@ typealias CourseTakingApplicationId = Identifier<CourseTakingApplication, String
 class CourseTakingApplication(
     private val id: CourseTakingApplicationId,
     private val studentId: StudentId,
-    private val courseId: CourseId,
-    private val state: State
+    private val course: Course,
+    private var state: State
 ) {
-    private var _state = state
 
     fun getId(): CourseTakingApplicationId {
         return id
@@ -20,25 +19,25 @@ class CourseTakingApplication(
         return studentId
     }
 
-    fun getCourseId(): CourseId {
-        return courseId
+    fun getCourse(): Course {
+        return course
     }
 
     fun getState(): State {
-        return _state
+        return state
     }
 
     /*抽選で当選する*/
 
     fun confirm() {
-        if (_state == State.UNCONFIRMED)
-            _state = State.CONFIRMED
+        if (state == State.UNCONFIRMED)
+            state = State.CONFIRMED
     }
 
     /*抽選で落選する*/
     fun invalidate() {
-        if (_state == State.UNCONFIRMED)
-            _state = State.INVALIDATED
+        if (state == State.UNCONFIRMED)
+            state = State.INVALIDATED
     }
 
 
