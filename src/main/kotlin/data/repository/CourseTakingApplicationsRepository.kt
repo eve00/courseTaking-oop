@@ -8,8 +8,8 @@ interface CourseTakingApplicationsRepository {
     suspend fun findByCourseId(courseId: CourseId): List<CourseTakingApplication>
     suspend fun findByCourseTakingApplicationId(courseTakingApplicationId: CourseTakingApplicationId): CourseTakingApplication
     suspend fun save(courseTakingApplication: CourseTakingApplication)
-    suspend fun delete(courseTakingApplication: CourseTakingApplication)
 
+    suspend fun delete(courseTakingApplicationId: CourseTakingApplicationId)
 }
 
 class CourseTakingApplicationsRepositoryImpl(): CourseTakingApplicationsRepository {
@@ -29,7 +29,7 @@ class CourseTakingApplicationsRepositoryImpl(): CourseTakingApplicationsReposito
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(courseTakingApplication: CourseTakingApplication) {
+    override suspend fun delete(courseTakingApplicationId: CourseTakingApplicationId) {
         TODO("Not yet implemented")
     }
 

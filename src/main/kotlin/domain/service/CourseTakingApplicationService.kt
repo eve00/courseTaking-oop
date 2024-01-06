@@ -3,7 +3,10 @@ package domain.service
 import domain.entity.*
 
 interface CourseTakingApplicationService {
-    suspend fun applyCourseTaking(courseTakingApplicationId: CourseTakingApplicationId, studentId:StudentId, courseId: CourseId)
-    suspend fun cancelCourseTaking(courseTakingApplicationId: CourseTakingApplicationId)
-    suspend fun getCourseTakingApplications(studentId: StudentId):  List<CourseTakingApplication>
-    }
+
+    suspend fun applyCourseTaking(
+        courseTakingApplicationId: CourseTakingApplicationId, studentId: StudentId, courseId: CourseId
+    ) : CourseTakingApplicationList
+    suspend fun cancelCourseTaking(studentId: StudentId, courseTakingApplicationId: CourseTakingApplicationId) : CourseTakingApplicationList
+    suspend fun getCourseTakingApplications(studentId: StudentId): CourseTakingApplicationList
+}

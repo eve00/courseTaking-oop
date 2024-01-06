@@ -6,13 +6,14 @@ typealias CourseId = Identifier<Course, String>
 
 
 class Course(
-    val id: CourseId,
-    val name: String,
-    val term: String,
-    val dowAndPeriod: DowAndPeriod,
-    val max: Int,
+
+    private val id: CourseId,
+    private val name: String,
+    private val term: String,
+    private val dowAndPeriod: DowAndPeriod,
+    private val max: Int,
+    private val credit: Int
 ) {
-    private var _max = max
     fun getId(): CourseId {
         return id
     }
@@ -30,7 +31,11 @@ class Course(
     }
 
     fun getMax(): Int {
-        return _max
+        return max
+    }
+
+    fun getCredit():Int {
+        return credit
     }
 }
 
