@@ -7,14 +7,18 @@ import domain.entity.CourseId
 import domain.service.FirstServedManagementService
 
 class FirstServedManagementServiceImpl(
-    private val repository: CourseTakingApplicationsRepository,
+    private val courseTakingApplicationsRepository: CourseTakingApplicationsRepository,
     private val coursesRepository: CoursesRepository
 ) : FirstServedManagementService {
     override suspend fun getCoursesCanTake(): List<Course> {
         return coursesRepository.findAll()
             .filter { course ->
-            repository.findByCourseId(course.getId()).size < course.getMax()
+                courseTakingApplicationsRepository.findByCourseId(course.getId()).size < course.getMax()
         }
     }
 
+    override suspend fun checkCanTake(courseId:CourseId): Boolean {
+        return coursesRepository.findById(courseId).getMax() >
+        courseTakingApplicationsRepository.findByCourseId(courseId).size
+    }
 }

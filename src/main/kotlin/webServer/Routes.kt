@@ -20,7 +20,7 @@ import org.http4k.core.Status.Companion.OK
 * */
 class CourseTakingAndRegistration(
     private val courseTakingApplicationService: CourseTakingApplicationService,
-    private val firstServedManagementServiceImpl: FirstServedManagementServiceImpl,
+    private val firstServedManagementService: FirstServedManagementServiceImpl,
     private val courseRegistrationService: CourseRegistrationService,
     private val coursesRepository: CoursesRepository
 ) : HttpHandler {
@@ -33,11 +33,11 @@ class CourseTakingAndRegistration(
         /*先着申請可能な科目*/
         "/course" bind Method.GET to ::getCoursesCanTake,
         /*申請*/
-        "/application/createApplication" bind Method.POST to ::applyCourseTaking,
-        "/application/cancelApplication" bind Method.DELETE to ::cancelCourseTaking,
+        "｛format｝/application/{studentId}/{courseId}" bind Method.POST to ::applyCourseTaking,
+        "/application/{studentId}/{courseTakingApplicationId}" bind Method.DELETE to ::cancelCourseTaking,
         /*抽選・登録*/
-        "/course/{courseId}/drawAndRegisterMembers" bind Method.POST to ::drawAndRegisterCourseMembers,
-        "/course/{courseId}/registerMembers" bind Method.POST to ::registerCourseMembers,
+        "/course/{courseId}" bind Method.POST to ::drawAndRegisterCourseMembers,
+        "/course/{courseId}" bind Method.POST to ::registerCourseMembers,
     )
 
 
@@ -59,7 +59,7 @@ class CourseTakingAndRegistration(
     private fun getCoursesCanTake(request: Request): Response {
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
-                firstServedManagementServiceImpl.getCoursesCanTake()
+                firstServedManagementService.getCoursesCanTake()
             }
         }
 
@@ -78,7 +78,7 @@ class CourseTakingAndRegistration(
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
                 /*requestからstudentIdを取得*/
-                val studentId: StudentId = StudentId(request.path("studentId") ?: "")
+                val studentId: StudentId = StudentId("someStudentId")
 
                 courseTakingApplicationService.getCourseTakingApplications(studentId)
             }
@@ -99,15 +99,20 @@ class CourseTakingAndRegistration(
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
                 /*requestからuser, applicationを取得*/
-                val studentId: StudentId = StudentId(request.path("studentId") ?: "")
-                val courseId: CourseId = CourseId(request.path("courseId") ?: "")
-
-                /*申請*/
-                courseTakingApplicationService.applyCourseTaking(
-                    CourseTakingApplicationId(UUID.randomUUID().toString()),
-                    studentId,
-                    courseId
-                )
+                val studentId: StudentId = StudentId("someStudentId")
+                val courseId: CourseId = CourseId("someCourseId")
+                val format: String = "first-served"
+                /*先着管理*/
+                if (firstServedManagementService.checkCanTake(courseId)) {
+                    /*申請*/
+                    courseTakingApplicationService.applyCourseTaking(
+                        CourseTakingApplicationId(UUID.randomUUID().toString()),
+                        studentId,
+                        courseId
+                    )
+                } else {
+                    throw Exception("すでに満員です。")
+                }
             }
         }
 
@@ -127,10 +132,13 @@ class CourseTakingAndRegistration(
             runCatching {
                 /*requestからapplicationIdを取得*/
                 val courseTakingApplicationId: CourseTakingApplicationId =
-                    CourseTakingApplicationId(request.path("courseTakingApplicationId") ?: "")
+                    CourseTakingApplicationId("someCourseTakingApplicationId")
+                val studentId: StudentId =
+                    StudentId("someStudentId")
 
                 /*申請のキャンセル*/
                 courseTakingApplicationService.cancelCourseTaking(
+                    studentId,
                     courseTakingApplicationId,
                 )
             }
@@ -148,7 +156,7 @@ class CourseTakingAndRegistration(
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
                 /*requestからcourseIdを取得*/
-                val courseId: CourseId = CourseId(request.path("courseId") ?: "")
+                val courseId: CourseId = CourseId("someCourseId")
                 /*抽選する*/
                 courseRegistrationService.drawingAndRegisterMembers(courseId)
             }
@@ -167,7 +175,7 @@ class CourseTakingAndRegistration(
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
                 /*requestからcourseIdを取得*/
-                val courseId: CourseId = CourseId(request.path("courseId") ?: "")
+                val courseId: CourseId = CourseId("someCourseId")
                 /*抽選する*/
                 courseRegistrationService.registerMembers(courseId)
             }
