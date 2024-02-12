@@ -1,20 +1,26 @@
 package latestModel.useCase
 
-import latestModel.Course
-import latestModel.Student
+import latestModel.*
 import latestModel.dataStore.ApplicationsDataStore
 
 
 fun applyAsFirstServe(
-    student: Student,
-    course: Course,
+    studentId: String,
+    courseId: String,
     dataStore: ApplicationsDataStore
 ) {
     /*IO*/
-    val applicationsOfCourse = dataStore.findByCourseId(course.id)
-    val applicationsOfStudent = dataStore.findByStudentId(student.id)
+    val applications = listOf<Application>()
+    val myApplications = listOf<Application>()
+    val student = Student(studentId)
+    val course = Course(courseId)
 
-
+    /*aggregate*/
+    val courseManager = CourseManager(course, applications)
+    val courseSchedule = CourseSchedule(myApplications)
+    if (courseManager.canApplyAsFirstserve()) {
+        courseSchedule.apply(student, course)
+    }
 
     /*IO*/
     //dataStore.save(newApplication)

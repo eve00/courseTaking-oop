@@ -1,4 +1,6 @@
-package domain.entity
+package domain
+
+import domain.entity.*
 
 class CourseTakingApplicationList(
     private val id: StudentId,
@@ -15,20 +17,17 @@ class CourseTakingApplicationList(
     }
 
     fun addCourseTakingApplication(courseTakingApplication: CourseTakingApplication) {
-        if (checkCanAdd(courseTakingApplication)){
-            courseTakingApplications.add(courseTakingApplication)
-            updateCredits()
-        }else {
-            throw IllegalStateException("取得可能な単位数を超過しています。")
-        }
-    }
-    fun removeCourseTakingApplication(courseTakingApplicationId: CourseTakingApplicationId) {
-            courseTakingApplications.remove(getCourseTakingApplicationOfId(courseTakingApplicationId))
-            updateCredits()
+        courseTakingApplications.add(courseTakingApplication)
+        updateCredits()
     }
 
-    private fun checkCanAdd(courseTakingApplication: CourseTakingApplication): Boolean {
-        return maxCredits >= credits + courseTakingApplication.getCourse().getCredit()
+    fun removeCourseTakingApplication(courseTakingApplicationId: CourseTakingApplicationId) {
+        courseTakingApplications.remove(getCourseTakingApplicationOfId(courseTakingApplicationId))
+        updateCredits()
+    }
+
+    fun isWithinLimit(): Boolean {
+        return maxCredits >= credits
     }
 
     private fun updateCredits() {

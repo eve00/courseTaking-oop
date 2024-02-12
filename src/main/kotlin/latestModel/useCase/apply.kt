@@ -1,19 +1,22 @@
 package latestModel.useCase
 
-import latestModel.Course
-import latestModel.Student
-import latestModel.createApplication
+import latestModel.*
 import latestModel.dataStore.ApplicationsDataStore
 
 
 fun apply(
-    student: Student,
-    course: Course,
-    dataStore: ApplicationsDataStore
-){
+    studentId: String,
+    courseId: String,
+) {
     /*IO*/
-    val applications = dataStore.findByStudentId(student.id)
+    val applications = listOf<Application>()
+    val myApplications = listOf<Application>()
+    val course = Course(courseId)
+    val student = Student(studentId)
 
+    /*aggregate*/
+    val courseSchedule = CourseSchedule(myApplications)
+    courseSchedule.apply(student, course)
 
     /*IO*/
     //dataStore.save(newApplication)

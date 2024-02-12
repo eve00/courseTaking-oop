@@ -1,10 +1,10 @@
 package latestModel
 
 class CourseManager(
-    val course: Course,
-    val applications:List<Application>
+    private val course: Course,
+    private val applications:List<Application>
 ) {
-    fun canApplyAsFirstserve():Boolean = true
+    fun canApplyWithFirstArrival():Boolean = applications.size <= course.capacity
 
     fun selectApplications(){
         /*落選したApplicationをRejected状態にする*/

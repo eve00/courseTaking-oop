@@ -3,10 +3,10 @@ package latestModel
 
 /*システムで扱うクラス*/
 class Application(
-    val id: String,
-    val student: Student,
-    val course: Course,
-    private var status: Status,
+    val id: String = "",
+    val student: Student = Student(),
+    val course: Course = Course(),
+    private var status: Status = Status.CREATED,
 ) {
     fun getStatus() = status
     fun markAsRegistered() {
@@ -19,15 +19,7 @@ class Application(
 }
 
 enum class Status {
-    NOT_REGISTERED,
+    CREATED,
     REGISTERED,
     REJECTED
 }
-
-/*永続化するデータのクラス*/
-class ApplicationData(
-    val id: String,
-    val studentId: String,
-    val courseId: String,
-    private var status: Status,
-)

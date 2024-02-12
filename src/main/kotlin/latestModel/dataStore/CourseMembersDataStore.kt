@@ -1,6 +1,7 @@
 package latestModel.dataStore
 
-import latestModel.dataClass.Student
+import latestModel.Student
+
 
 interface CourseMembersDataStore {
 

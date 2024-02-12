@@ -75,11 +75,11 @@ class CourseTakingAndRegistration(
 * {studentId}
 * */
     private fun getApplications(request: Request): Response {
+        /*requestからstudentIdを取得*/
+        val studentId: StudentId = StudentId("someStudentId")
+
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
-                /*requestからstudentIdを取得*/
-                val studentId: StudentId = StudentId("someStudentId")
-
                 courseTakingApplicationService.getCourseTakingApplications(studentId)
             }
         }
@@ -96,12 +96,13 @@ class CourseTakingAndRegistration(
     * {studentId, courseId}
     * */
     private fun applyCourseTaking(request: Request): Response {
+        /*requestからuser, applicationを取得*/
+        val studentId: StudentId = StudentId("someStudentId")
+        val courseId: CourseId = CourseId("someCourseId")
+        val format: String = "first-served"
+
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
-                /*requestからuser, applicationを取得*/
-                val studentId: StudentId = StudentId("someStudentId")
-                val courseId: CourseId = CourseId("someCourseId")
-                val format: String = "first-served"
                 /*先着管理*/
                 if (firstServedManagementService.checkCanTake(courseId)) {
                     /*申請*/
@@ -128,14 +129,14 @@ class CourseTakingAndRegistration(
     * {courseTakingApplicationId}
     * */
     private fun cancelCourseTaking(request: Request): Response {
+        /*requestからapplicationIdを取得*/
+        val courseTakingApplicationId: CourseTakingApplicationId =
+            CourseTakingApplicationId("someCourseTakingApplicationId")
+        val studentId: StudentId =
+            StudentId("someStudentId")
+
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
-                /*requestからapplicationIdを取得*/
-                val courseTakingApplicationId: CourseTakingApplicationId =
-                    CourseTakingApplicationId("someCourseTakingApplicationId")
-                val studentId: StudentId =
-                    StudentId("someStudentId")
-
                 /*申請のキャンセル*/
                 courseTakingApplicationService.cancelCourseTaking(
                     studentId,
@@ -153,10 +154,11 @@ class CourseTakingAndRegistration(
     }
 
     private fun drawAndRegisterCourseMembers(request: Request): Response {
+        /*requestからcourseIdを取得*/
+        val courseId: CourseId = CourseId("someCourseId")
+
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
-                /*requestからcourseIdを取得*/
-                val courseId: CourseId = CourseId("someCourseId")
                 /*抽選する*/
                 courseRegistrationService.drawingAndRegisterMembers(courseId)
             }
@@ -172,15 +174,15 @@ class CourseTakingAndRegistration(
     }
 
     private fun registerCourseMembers(request: Request): Response {
+        /*requestからcourseIdを取得*/
+        val courseId: CourseId = CourseId("someCourseId")
+
         val result = CoroutineScope(Dispatchers.IO).async {
             runCatching {
-                /*requestからcourseIdを取得*/
-                val courseId: CourseId = CourseId("someCourseId")
                 /*抽選する*/
                 courseRegistrationService.registerMembers(courseId)
             }
         }
-
 
         /*結果を返す*/
         return if (result.getCompleted().isSuccess) {

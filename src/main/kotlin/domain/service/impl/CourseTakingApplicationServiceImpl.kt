@@ -3,7 +3,9 @@ package domain.service.impl
 import data.repository.CourseTakingApplicationsRepository
 
 import data.repository.CoursesRepository
+import domain.CourseTakingApplicationList
 import domain.entity.*
+
 import domain.service.CourseTakingApplicationService
 
 /*
@@ -11,7 +13,7 @@ import domain.service.CourseTakingApplicationService
 *
 * */
 class CourseTakingApplicationServiceImpl(
-    private val courseTakingApplicationRepository: CourseTakingApplicationsRepository,
+    private val courseTakingApplicationsRepository: CourseTakingApplicationsRepository,
     private val coursesRepository: CoursesRepository
 ) : CourseTakingApplicationService {
 
@@ -21,14 +23,17 @@ class CourseTakingApplicationServiceImpl(
         courseTakingApplicationId: CourseTakingApplicationId,
         studentId: StudentId,
         courseId: CourseId
-    ): CourseTakingApplicationList {
+    ): CourseTakingApplicationList? {
         val courseTakingApplicationList = getCourseTakingApplicationList(studentId)
 
         val newCourseTakingApplication = createCourseTakingApplication(courseTakingApplicationId,studentId,courseId)
         courseTakingApplicationList.addCourseTakingApplication(newCourseTakingApplication)
-        courseTakingApplicationRepository.save(newCourseTakingApplication)
-
-        return courseTakingApplicationList
+        if(courseTakingApplicationList.isWithinLimit()){
+            courseTakingApplicationsRepository.save(newCourseTakingApplication)
+            return courseTakingApplicationList
+        }else{
+            throw Exception("取得可能な単位数を超過しています。")
+        }
     }
 
     override suspend fun cancelCourseTaking(
@@ -38,7 +43,7 @@ class CourseTakingApplicationServiceImpl(
         val courseTakingApplicationList = getCourseTakingApplicationList(studentId)
 
         courseTakingApplicationList.removeCourseTakingApplication(courseTakingApplicationId)
-        courseTakingApplicationRepository.delete(courseTakingApplicationId)
+        courseTakingApplicationsRepository.delete(courseTakingApplicationId)
 
         return courseTakingApplicationList
     }
@@ -49,7 +54,7 @@ class CourseTakingApplicationServiceImpl(
 
     /*CourseTakingApplicationListの生成*/
     private suspend fun getCourseTakingApplicationList(studentId: StudentId): CourseTakingApplicationList {
-        val courseTakingApplications = courseTakingApplicationRepository.findByStudentId(studentId)
+        val courseTakingApplications = courseTakingApplicationsRepository.findByStudentId(studentId)
         return CourseTakingApplicationList(
             studentId,
             courseTakingApplications.toMutableList(),

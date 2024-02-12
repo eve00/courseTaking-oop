@@ -34,12 +34,16 @@ class Course(
         return max
     }
 
-    fun getCredit():Int {
+    fun getCredit(): Int {
         return credit
     }
 }
 
 data class DowAndPeriod(
-    val dow: String,
+    val dow: Dow,
     val period: String
 )
+
+enum class Dow {
+    Monday, Tuesday, Wednesday, Thursday, Friday
+}
